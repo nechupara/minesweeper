@@ -1,10 +1,22 @@
 "use strict";
 
-const H_CELLS = 20;
-const V_CELLS = 30;
+const H_CELLS = 8;
+const V_CELLS = 8;
 const NUMBER_OF_BOMBS = Math.floor((H_CELLS * V_CELLS) / 6);
 
 const field = /** @type {HTMLDivElement} */ (document.querySelector(".field"));
+const restartBtn = /** @type {HTMLDivElement} */ (document.querySelector("#restart-btn"));
+const flagsSet = field.getElementsByClassName("flag");
+
+const clearField = () => {
+    field.innerHTML = "";
+};
+
+const refreshFlagsNumber = () => {
+    const flagsNumberField = /** @type {HTMLElement} */ (document.querySelector("#flags"));
+    flagsNumberField.innerText = `${flagsSet.length}/${NUMBER_OF_BOMBS}`;
+};
+
 const drawField = () => {
     field.style.cssText = `display: grid;
                            grid-template-columns: repeat(${H_CELLS}, 1fr);
@@ -22,12 +34,8 @@ const drawField = () => {
             field.append(cell);
         }
     }
+    refreshFlagsNumber();
 };
-
-const flagsSet = field.getElementsByClassName('flag')
-const refreshFlagsNumber = ()=>{
-    const flagsNumberField = document.querySelector('#flags')
-}
 
 const placeBombs = () => {
     const cells = /** @type {NodeListOf.<HTMLDivElement>} */ (field.querySelectorAll(".cell"));
@@ -139,13 +147,6 @@ const openEmptyArea = () => {
     }
 };
 
-const gameOver = () => {
-    const mines = /** @type {HTMLElement} */ field.querySelectorAll(".mine:not(.explosion)");
-    mines.forEach((el) => {
-        el.classList.add("show-mine");
-    });
-};
-
 /** @param {HTMLElement} elem @returns {void}*/
 const openNearbyWithFlags = (elem) => {
     let isGameOver = false;
@@ -154,6 +155,7 @@ const openNearbyWithFlags = (elem) => {
         if (cell.classList.contains("mine") && !cell.classList.contains("flag")) {
             if (!isGameOver) {
                 cell.classList.add("explosion");
+                // cell.classList.remove("hidden")
             }
             isGameOver = true;
         } else if (cell.classList.contains("flag") && !cell.classList.contains("mine")) {
@@ -166,11 +168,41 @@ const openNearbyWithFlags = (elem) => {
         return;
     }
     listOfNeighbors.forEach((cell) => {
-        if (!cell.classList.contains("mine") && !cell.classList.contains("wrong-flag")) {
+        if (!cell.classList.contains("mine")) {
             cell.classList.add("opened");
+            cell.classList.remove("hidden");
             if (cell.classList.contains("neighbor")) {
                 cell.innerText = cell.dataset.minesAround;
+            } else {
+                cell.classList.add("expand");
+                openEmptyArea();
             }
         }
     });
 };
+
+const deactivateField = () => {
+    field.removeEventListener("click", clickHandler);
+    field.removeEventListener("dblclick", dblClickHandler);
+    field.removeEventListener("contextmenu", rightClickHandler);
+};
+
+const gameOver = () => {
+    const mines = /** @type {HTMLElement} */ field.querySelectorAll(".mine:not(.explosion)");
+    mines.forEach((el) => {
+        if (!el.classList.contains("flag")) {
+            el.classList.add("show-mine");
+        }
+    });
+    deactivateField();
+};
+
+const checkIfWin = () => {
+    const hiddenEmptyCells = /** @type {NodeListOf.<HTMLElement>} */ (field.querySelectorAll(".hidden:not(.mine)"));
+    const markedMines = /** @type {NodeListOf.<HTMLElement>} */ (field.querySelectorAll(".mine.flag"));
+    if (hiddenEmptyCells.length === 0 && markedMines.length === NUMBER_OF_BOMBS) {
+        deactivateField();
+        alert("YOU WIN!!!");
+    }
+};
+
