@@ -1,0 +1,76 @@
+body {
+    box-sizing: border-box;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    flex-direction: column;
+}
+/* .field {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+
+} */
+
+.cell {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid gray;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: -1px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.cell.mine {
+    background-color: coral;
+}
+
+.neighbor {
+    background-color: #e1e4c2;
+}
+
+.hidden {
+    background-color: #72a7ec;
+}
+
+.opened {
+    background-color: white;
+}
+
+.opened.neighbor {
+    background-color: #ebc8ac;
+}
+
+.flag {
+    background-image: url("../img/flat_basic_home_flag_-512.webp");
+    background-size: 20px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.cell.explosion {
+    background-color: #df4444;
+}
+
+.wrong-flag {
+    background-color: #eb73bd;
+}
+
+.cell.show-mine {
+    background-color: #646464;
+}
+
+.mine.explosion,
+.mine.show-mine {
+    background-image: url("../img/seamine.png");
+    background-size: 20px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
